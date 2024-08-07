@@ -53,6 +53,7 @@ pub struct ForeignFuture {
 
 impl Drop for ForeignFuture {
     fn drop(&mut self) {
+        println!("Dropping {}", self.handle);
         (self.free)(self.handle)
     }
 }
