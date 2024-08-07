@@ -12,6 +12,7 @@ use std::{
 };
 
 use futures::future::{AbortHandle, Abortable, Aborted};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Non-blocking timer future.
 pub struct TimerFuture {
