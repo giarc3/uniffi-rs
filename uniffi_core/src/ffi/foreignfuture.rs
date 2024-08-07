@@ -18,6 +18,7 @@
 //!     If this is called before the task completes, then the task will be cancelled.
 
 use crate::{LiftReturn, RustCallStatus, UnexpectedUniFFICallbackError};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Handle for a foreign future
 pub type ForeignFutureHandle = u64;
@@ -53,7 +54,14 @@ pub struct ForeignFuture {
 
 impl Drop for ForeignFuture {
     fn drop(&mut self) {
-        println!("Dropping {}", self.handle);
+        println!(
+            "Dropping handle {}. Time: {}",
+            self.handle,
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis()
+        );
         (self.free)(self.handle)
     }
 }

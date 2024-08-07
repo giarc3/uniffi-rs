@@ -492,12 +492,30 @@ async fn cancel_delay_using_trait(obj: Arc<dyn AsyncParser>, delay_ms: i32) {
     thread::spawn(move || {
         // Simulate a different thread aborting the process
         thread::sleep(Duration::from_millis(1));
-        println!("About to abort.");
+        println!(
+            "About to abort. Time: {}",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis()
+        );
         abort_handle.abort();
-        println!("After the abort.");
+        println!(
+            "After the abort. Time: {}",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis()
+        );
     });
     let future = Abortable::new(obj.delay(delay_ms), abort_registration);
-    println!("About to await");
+    println!(
+        "About to await. Time: {}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis()
+    );
     assert_eq!(future.await, Err(Aborted));
 }
 
