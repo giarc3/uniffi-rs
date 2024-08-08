@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use std::{future::Future, sync::Arc};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 mod future;
 mod scheduler;
@@ -51,9 +52,15 @@ where
     // Needed to allocate a handle
     dyn RustFutureFfi<T::ReturnType>: HandleAlloc<UT>,
 {
-    <dyn RustFutureFfi<T::ReturnType> as HandleAlloc<UT>>::new_handle(
+    let handle = <dyn RustFutureFfi<T::ReturnType> as HandleAlloc<UT>>::new_handle(
         RustFuture::new(future, tag) as Arc<dyn RustFutureFfi<T::ReturnType>>
-    )
+    );
+    println!("rust_future_new:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
+    handle
 }
 
 /// Poll a Rust future
@@ -72,6 +79,11 @@ pub unsafe fn rust_future_poll<ReturnType, UT>(
 ) where
     dyn RustFutureFfi<ReturnType>: HandleAlloc<UT>,
 {
+    println!("rust_future_poll:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
     <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::get_arc(handle).ffi_poll(callback, data)
 }
 
@@ -89,6 +101,11 @@ pub unsafe fn rust_future_cancel<ReturnType, UT>(handle: Handle)
 where
     dyn RustFutureFfi<ReturnType>: HandleAlloc<UT>,
 {
+    println!("rust_future_cancel:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
     <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::get_arc(handle).ffi_cancel()
 }
 
@@ -109,6 +126,11 @@ pub unsafe fn rust_future_complete<ReturnType, UT>(
 where
     dyn RustFutureFfi<ReturnType>: HandleAlloc<UT>,
 {
+    println!("rust_future_complete:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
     <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::get_arc(handle).ffi_complete(out_status)
 }
 
@@ -122,6 +144,11 @@ pub unsafe fn rust_future_free<ReturnType, UT>(handle: Handle)
 where
     dyn RustFutureFfi<ReturnType>: HandleAlloc<UT>,
 {
+    println!("rust_future_free:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
     <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::consume_handle(handle).ffi_free()
 }
 

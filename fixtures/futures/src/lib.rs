@@ -518,6 +518,11 @@ async fn cancel_delay_using_trait(obj: Arc<dyn AsyncParser>, delay_ms: i32) {
             .as_millis()
     );
     assert_eq!(future.await, Err(Aborted));
+    println!("Finished awaiting foreign future: {}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
 }
 
 uniffi::include_scaffolding!("futures");
