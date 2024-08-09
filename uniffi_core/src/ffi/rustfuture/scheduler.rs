@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use std::mem;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{RustFutureContinuationCallback, RustFuturePoll};
 
@@ -67,7 +68,15 @@ impl Scheduler {
                 let old_data = *old_data;
                 let callback = *callback;
                 *self = Self::Empty;
+                println!("Scheduler wake called, invoking callback: {}", SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis());
                 callback(old_data, RustFuturePoll::MaybeReady);
+                println!("Scheduler finished callback: {}", SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis());
             }
             // If we were in the `Empty` state, then transition to `Waked`.  The next time `store`
             // is called, we will immediately call the continuation.
