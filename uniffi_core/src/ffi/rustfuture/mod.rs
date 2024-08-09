@@ -84,7 +84,13 @@ pub unsafe fn rust_future_poll<ReturnType, UT>(
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_millis());
-    <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::get_arc(handle).ffi_poll(callback, data)
+    let r = <dyn RustFutureFfi<ReturnType> as HandleAlloc<UT>>::get_arc(handle).ffi_poll(callback, data);
+    println!("rust_future_poll finished:\n    handle: {:?}\n    time: {}", handle, 
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis());
+    r
 }
 
 /// Cancel a Rust future
