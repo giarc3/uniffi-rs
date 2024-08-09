@@ -55,7 +55,7 @@ pub struct ForeignFuture {
 impl Drop for ForeignFuture {
     fn drop(&mut self) {
         println!(
-            "Dropping handle {}. Time: {}",
+            "Dropping handle {}: {}",
             self.handle,
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
@@ -78,6 +78,10 @@ where
     // The important thing is that the ForeignFuture will be dropped when this Future is.
     let _foreign_future =
         call_scaffolding_function(foreign_future_complete::<T, UT>, sender.into_raw() as u64);
+    println!("foreign_async_call for ForeignFuture handle {}: {}", _foreign_future.handle, SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis());
     match receiver.await {
         Ok(result) => T::lift_foreign_return(result.return_value, result.call_status),
         Err(e) => {
